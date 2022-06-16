@@ -4,6 +4,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -39,8 +40,8 @@ public class FlutterForegroundService extends Service {
             case FlutterForegroundPlugin.START_FOREGROUND_ACTION:
                 PackageManager pm = getApplicationContext().getPackageManager();
                 Intent notificationIntent = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName());
-                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                        notificationIntent, 0);
+                PendingIntent pendingIntent = getPendingIntent(this, notificationIntent, 0);
+
 
                 Bundle bundle = intent.getExtras();
 
@@ -66,8 +67,7 @@ public class FlutterForegroundService extends Service {
                     Intent stopSelf = new Intent(this, FlutterForegroundService.class);
                     stopSelf.setAction(ACTION_STOP_SERVICE);
 
-                    PendingIntent pStopSelf = PendingIntent
-                            .getService(this, 0, stopSelf, PendingIntent.FLAG_CANCEL_CURRENT);
+                    PendingIntent pStopSelf = getPendingIntent(this, stopSelf, PendingIntent.FLAG_CANCEL_CURRENT);
                     builder.addAction(getNotificationIcon(bundle.getString("stop_icon")),
                             bundle.getString("stop_text"),
                             pStopSelf);
@@ -117,5 +117,16 @@ public class FlutterForegroundService extends Service {
         userStopForegroundService = true;
         stopForeground(true);
         stopSelf();
+    }
+
+    public static PendingIntent getPendingIntent(Context context, Intent intent, int flag){
+        PendingIntent pendingIntent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            pendingIntent = PendingIntent.getActivity(context, 0, intent,
+                    PendingIntent.FLAG_MUTABLE);
+        } else {
+            pendingIntent = PendingIntent.getActivity(context, 0, intent, flag);
+        }
+        return pendingIntent;
     }
 }
