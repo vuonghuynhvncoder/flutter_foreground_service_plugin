@@ -121,7 +121,7 @@ public class FlutterForegroundService extends Service {
 
     public static PendingIntent getPendingIntent(Context context, Intent intent, int flag){
         PendingIntent pendingIntent;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+        if (android.os.Build.VERSION.SDK_INT >= 31) {
             pendingIntent = PendingIntent.getActivity(context, 0, intent,
                     PendingIntent.FLAG_MUTABLE);
         } else {
