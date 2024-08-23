@@ -1,5 +1,7 @@
 package changjoopark.com.flutter_foreground_plugin;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -77,7 +79,12 @@ public class FlutterForegroundService extends Service {
                     builder.setSubText(bundle.getString("subtext"));
                 }
 
-                startForeground(ONGOING_NOTIFICATION_ID, builder.build());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    startForeground(ONGOING_NOTIFICATION_ID, builder.build(),
+                            FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+                }else {
+                    startForeground(ONGOING_NOTIFICATION_ID, builder.build());
+                }
                 break;
             case FlutterForegroundPlugin.STOP_FOREGROUND_ACTION:
                 stopFlutterForegroundService();
